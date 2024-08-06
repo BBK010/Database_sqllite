@@ -1,6 +1,9 @@
 package com.example.database_sqllite;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -24,11 +27,46 @@ public class Databasehelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRYMARY KEY AUTOINCREMENT,"+
+                "NAME TEXT MARKS INTEGER)");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+    sqLiteDatabase.execSQL("  DROP TABLE IF EXISTS " + TABLE_NAME);
+    onCreate(sqLiteDatabase);
+    }
+    public boolean insertData(String id, String name, String marks){
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL1,id);
+        contentValues.put(COL2,name);
+        contentValues.put(COL3,marks);
+        Long result =sqLiteDatabase.insert(TABLE_NAME,null,contentValues);
+        if(result==-1){
+            return false;
+            }
+        else {
+            return true;
+        }
+    }
+    public Cursor getAllData(){
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        Cursor cursor=sqLiteDatabase.rawQuery("select * from",null);
+        return cursor;
+    }
+    public boolean updateData(String id, String name, String marks) {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL1, id);
+        contentValues.put(COL2, name);
+        contentValues.put(COL3, marks);
+        sqLiteDatabase.update(TABLE_NAME, contentValues, null, new String[]{id});
+        return true;
+    }
+    public Integer deleteData(String id){
+        SQLiteDatabase sqLiteDatabase=this.getWritableDatabase();
+        return sqLiteDatabase.delete(TABLE_NAME,"Id=?",new String[]{id});
     }
 }
